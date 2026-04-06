@@ -1,3 +1,11 @@
+---
+layout: default
+title: OpenRAG Docs
+---
+
+
+
+
 # OpenRAG Docs
 
 Welcome to the documentation.
