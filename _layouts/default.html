@@ -4,13 +4,46 @@
   <meta charset="utf-8">
   <title>{{ page.title }}</title>
 
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJZVJX9NEY"></script>
+  <!-- Amplitude Analytics -->
+  <script src="https://cdn.amplitude.com/script/a4faed95ebbebd928967cc6f9e1e7694.js"></script>
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-KJZVJX9NEY');
+    window.amplitude.add(window.sessionReplay.plugin({ sampleRate: 1 }));
+    window.amplitude.init('a4faed95ebbebd928967cc6f9e1e7694', {
+      autocapture: true
+    });
+
+    (function() {
+      var storageKey = 'vetcorless_unique_visitor_id';
+      var countKey = 'vetcorless_unique_visitor_count';
+      var visitorId = localStorage.getItem(storageKey);
+      var isNewVisitor = false;
+
+      if (!visitorId) {
+        visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+        localStorage.setItem(storageKey, visitorId);
+        isNewVisitor = true;
+      }
+
+      window.amplitude.setUserId(visitorId);
+      window.amplitude.track('page_view', {
+        page_title: document.title,
+        page_path: window.location.pathname,
+        page_url: window.location.href,
+        is_new_visitor: isNewVisitor
+      });
+
+      if (isNewVisitor) {
+        var currentCount = parseInt(localStorage.getItem(countKey) || '0', 10);
+        localStorage.setItem(countKey, String(currentCount + 1));
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        var uniqueCountElement = document.getElementById('unique-user-count');
+        if (uniqueCountElement) {
+          uniqueCountElement.textContent = localStorage.getItem(countKey) || '1';
+        }
+      });
+    })();
   </script>
 
   <style>
@@ -73,58 +106,22 @@
 <body>
   {{ content }}
   
-  <!-- Visitor Counter Display -->
+  <!-- Visitor Counter Display using Image Badges -->
   <div class="visitor-stats">
     <div class="stat-row">
-      <span class="stat-label">👥 Total Visitors</span>
-      <span class="stat-value" id="total-users">---</span>
+      <span class="stat-label">👥 Visitors</span>
+      <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fpriyankavgalagali.github.io%2Fvetcorless_Pageindex&count_bg=%23FFFFFF&title_bg=%23667eea&icon=&icon_color=%23E7E7E7&title=&edge_flat=true" alt="visitor count" style="height: 20px; vertical-align: middle;"/>
     </div>
     <div class="divider"></div>
     <div class="stat-row">
-      <span class="stat-label">📊 Page Views</span>
-      <span class="stat-value" id="page-views">---</span>
+      <span class="stat-label">🆔 Unique Users</span>
+      <span class="stat-value" id="unique-user-count" style="font-size: 14px;">--</span>
+    </div>
+    <div class="divider"></div>
+    <div class="stat-row">
+      <span class="stat-label">📊 Analytics</span>
+      <span class="stat-value" style="font-size: 14px;">Amplitude</span>
     </div>
   </div>
-
-  <!-- Visitor Counter using CountAPI (Free Service) -->
-  <script>
-    // Configuration
-    const namespace = 'vetcorless-pageindex';
-    
-    // Function to update visitor count using CountAPI.xyz
-    async function updateVisitorCount() {
-      try {
-        // Fetch unique visitor count
-        const visitorResponse = await fetch(`https://api.countapi.xyz/hit/${namespace}/visitors`);
-        const visitorData = await visitorResponse.json();
-        
-        // Fetch page view count
-        const pageViewResponse = await fetch(`https://api.countapi.xyz/hit/${namespace}/pageviews`);
-        const pageViewData = await pageViewResponse.json();
-        
-        // Update display with actual counts
-        if (visitorData && visitorData.value !== undefined) {
-          document.getElementById('total-users').textContent = visitorData.value.toLocaleString();
-        }
-        
-        if (pageViewData && pageViewData.value !== undefined) {
-          document.getElementById('page-views').textContent = pageViewData.value.toLocaleString();
-        }
-        
-        console.log('Visitor stats updated:', visitorData.value, pageViewData.value);
-      } catch (error) {
-        console.error('Error fetching visitor stats:', error);
-        document.getElementById('total-users').textContent = 'Error';
-        document.getElementById('page-views').textContent = 'Error';
-      }
-    }
-    
-    // Update counts when page loads
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', updateVisitorCount);
-    } else {
-      updateVisitorCount();
-    }
-  </script>
 </body>
 </html>

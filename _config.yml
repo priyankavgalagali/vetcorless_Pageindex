@@ -6,9 +6,6 @@ source: .
 baseurl: "" # Leave empty if repo is at root
 url: "" # Will be set by GitHub Pages automatically
 
-# Google Analytics
-google_analytics: G-KJZVJX9NEY
-
 # Exclude files from processing
 exclude:
   - GA_SETUP.md
