@@ -60,4 +60,3 @@ Job Profiling
 You can profile Ray Jobs by clicking on the “Stack Trace” or “CPU Flame Graph” actions. See Profiling for more details.
 
 Task and Actor breakdown
-![visitors](https://visitor-badge.laobi.icu/badge?page_id=...)
