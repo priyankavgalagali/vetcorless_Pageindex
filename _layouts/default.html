@@ -73,75 +73,40 @@
 
   <div class="visitor-stats">
     <div class="stat-row">
-      <span class="stat-label">👥 Visitors</span>
-      <img
-        src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fpriyankavgalagali.github.io%2Fvetcorless_Pageindex&count_bg=%23FFFFFF&title_bg=%23667eea&icon=&icon_color=%23E7E7E7&title=&edge_flat=true"
-        alt="visitor count"
-        style="height: 20px; vertical-align: middle;"
-      />
-    </div>
-    <div class="divider"></div>
-    <div class="stat-row">
       <span class="stat-label">🆔 Unique Users</span>
       <span class="stat-value" id="unique-user-count">--</span>
-    </div>
-    <div class="divider"></div>
-    <div class="stat-row">
-      <span class="stat-label">📊 Analytics</span>
-      <span class="stat-value" style="font-size: 14px;">Amplitude</span>
     </div>
   </div>
 
   <script>
     (function () {
-      // 🔧 REPLACE THIS with your Firebase Realtime Database URL
       var FIREBASE_URL = 'https://unique-user-default-rtdb.asia-southeast1.firebasedatabase.app';
-
       var storageKey = 'vetcorless_unique_visitor_id';
       var visitorId = localStorage.getItem(storageKey);
-      var isNewVisitor = false;
 
       if (!visitorId) {
         visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
         localStorage.setItem(storageKey, visitorId);
-        isNewVisitor = true;
       }
 
-      // Track in Amplitude
       window.amplitude.setUserId(visitorId);
       window.amplitude.track('page_view', {
         page_title: document.title,
         page_path: window.location.pathname,
-        page_url: window.location.href,
-        is_new_visitor: isNewVisitor
+        page_url: window.location.href
       });
 
-      function showCount(n) {
+      function showCount(value) {
         var el = document.getElementById('unique-user-count');
-        if (el) el.textContent = n;
+        if (el) {
+          el.textContent = value;
+        }
       }
 
-      if (isNewVisitor) {
-        // Read current count, increment by 1, write back, then display
-        fetch(FIREBASE_URL + '/uniqueUsers.json')
-          .then(function (r) { return r.json(); })
-          .then(function (current) {
-            var newCount = (current || 0) + 1;
-            return fetch(FIREBASE_URL + '/uniqueUsers.json', {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(newCount)
-            }).then(function () { return newCount; });
-          })
-          .then(showCount)
-          .catch(function () { showCount('?'); });
-      } else {
-        // Just read and display
-        fetch(FIREBASE_URL + '/uniqueUsers.json')
-          .then(function (r) { return r.json(); })
-          .then(function (count) { showCount(count || 0); })
-          .catch(function () { showCount('?'); });
-      }
+      fetch(FIREBASE_URL + '/uniqueUsers.json')
+        .then(function (r) { return r.json(); })
+        .then(function (count) { showCount(count || 0); })
+        .catch(function () { showCount('?'); });
     })();
   </script>
 </body>
