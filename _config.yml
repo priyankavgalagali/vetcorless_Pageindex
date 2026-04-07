@@ -1,4 +1,36 @@
 title: My Project Docs
 description: OpenRAG Documentation
 
+# GitHub Pages Configuration
+source: .
+baseurl: "" # Leave empty if repo is at root
+url: "" # Will be set by GitHub Pages automatically
+
+# Google Analytics
 google_analytics: G-KJZVJX9NEY
+
+# Exclude files from processing
+exclude:
+  - GA_SETUP.md
+  - QUICK_START_VISITOR_BADGE.md
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .git
+  - .gitattributes
+  - .DS_Store
+
+# Theme (optional - GitHub Pages will use default if not specified)
+# theme: jekyll-theme-minimal
+
+# Markdown processor
+markdown: kramdown
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+
