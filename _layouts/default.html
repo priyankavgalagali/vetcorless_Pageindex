@@ -14,7 +14,6 @@
 
     (function() {
       var storageKey = 'vetcorless_unique_visitor_id';
-      var countKey = 'vetcorless_unique_visitor_count';
       var visitorId = localStorage.getItem(storageKey);
       var isNewVisitor = false;
 
@@ -30,18 +29,6 @@
         page_path: window.location.pathname,
         page_url: window.location.href,
         is_new_visitor: isNewVisitor
-      });
-
-      if (isNewVisitor) {
-        var currentCount = parseInt(localStorage.getItem(countKey) || '0', 10);
-        localStorage.setItem(countKey, String(currentCount + 1));
-      }
-
-      document.addEventListener('DOMContentLoaded', function() {
-        var uniqueCountElement = document.getElementById('unique-user-count');
-        if (uniqueCountElement) {
-          uniqueCountElement.textContent = localStorage.getItem(countKey) || '1';
-        }
       });
     })();
   </script>
@@ -88,6 +75,16 @@
       background: rgba(255,255,255,0.3);
       margin: 8px 0;
     }
+    .visitor-stats a {
+      color: white;
+      font-size: 11px;
+      opacity: 0.85;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.4);
+    }
+    .visitor-stats a:hover {
+      opacity: 1;
+    }
     @media (max-width: 768px) {
       .visitor-stats {
         bottom: 10px;
@@ -105,17 +102,23 @@
 </head>
 <body>
   {{ content }}
-  
-  <!-- Visitor Counter Display using Image Badges -->
+
+  <!-- Visitor Counter Widget -->
   <div class="visitor-stats">
     <div class="stat-row">
       <span class="stat-label">👥 Visitors</span>
-      <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fpriyankavgalagali.github.io%2Fvetcorless_Pageindex&count_bg=%23FFFFFF&title_bg=%23667eea&icon=&icon_color=%23E7E7E7&title=&edge_flat=true" alt="visitor count" style="height: 20px; vertical-align: middle;"/>
+      <img
+        src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fpriyankavgalagali.github.io%2Fvetcorless_Pageindex&count_bg=%23FFFFFF&title_bg=%23667eea&icon=&icon_color=%23E7E7E7&title=&edge_flat=true"
+        alt="visitor count"
+        style="height: 20px; vertical-align: middle;"
+      />
     </div>
     <div class="divider"></div>
     <div class="stat-row">
       <span class="stat-label">🆔 Unique Users</span>
-      <span class="stat-value" id="unique-user-count" style="font-size: 14px;">--</span>
+      <a href="https://app.amplitude.com" target="_blank" rel="noopener">
+        View in Amplitude →
+      </a>
     </div>
     <div class="divider"></div>
     <div class="stat-row">
