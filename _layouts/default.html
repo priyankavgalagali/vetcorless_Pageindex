@@ -8,29 +8,7 @@
   <script src="https://cdn.amplitude.com/script/a4faed95ebbebd928967cc6f9e1e7694.js"></script>
   <script>
     window.amplitude.add(window.sessionReplay.plugin({ sampleRate: 1 }));
-    window.amplitude.init('a4faed95ebbebd928967cc6f9e1e7694', {
-      autocapture: true
-    });
-
-    (function() {
-      var storageKey = 'vetcorless_unique_visitor_id';
-      var visitorId = localStorage.getItem(storageKey);
-      var isNewVisitor = false;
-
-      if (!visitorId) {
-        visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
-        localStorage.setItem(storageKey, visitorId);
-        isNewVisitor = true;
-      }
-
-      window.amplitude.setUserId(visitorId);
-      window.amplitude.track('page_view', {
-        page_title: document.title,
-        page_path: window.location.pathname,
-        page_url: window.location.href,
-        is_new_visitor: isNewVisitor
-      });
-    })();
+    window.amplitude.init('a4faed95ebbebd928967cc6f9e1e7694', { autocapture: true });
   </script>
 
   <style>
@@ -75,16 +53,6 @@
       background: rgba(255,255,255,0.3);
       margin: 8px 0;
     }
-    .visitor-stats a {
-      color: white;
-      font-size: 11px;
-      opacity: 0.85;
-      text-decoration: none;
-      border-bottom: 1px solid rgba(255,255,255,0.4);
-    }
-    .visitor-stats a:hover {
-      opacity: 1;
-    }
     @media (max-width: 768px) {
       .visitor-stats {
         bottom: 10px;
@@ -103,7 +71,6 @@
 <body>
   {{ content }}
 
-  <!-- Visitor Counter Widget -->
   <div class="visitor-stats">
     <div class="stat-row">
       <span class="stat-label">👥 Visitors</span>
@@ -116,9 +83,7 @@
     <div class="divider"></div>
     <div class="stat-row">
       <span class="stat-label">🆔 Unique Users</span>
-      <a href="https://app.amplitude.com" target="_blank" rel="noopener">
-        View in Amplitude →
-      </a>
+      <span class="stat-value" id="unique-user-count">--</span>
     </div>
     <div class="divider"></div>
     <div class="stat-row">
@@ -126,5 +91,58 @@
       <span class="stat-value" style="font-size: 14px;">Amplitude</span>
     </div>
   </div>
+
+  <script>
+    (function () {
+      // 🔧 REPLACE THIS with your Firebase Realtime Database URL
+      var FIREBASE_URL = 'https://unique-user-default-rtdb.asia-southeast1.firebasedatabase.app';
+
+      var storageKey = 'vetcorless_unique_visitor_id';
+      var visitorId = localStorage.getItem(storageKey);
+      var isNewVisitor = false;
+
+      if (!visitorId) {
+        visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+        localStorage.setItem(storageKey, visitorId);
+        isNewVisitor = true;
+      }
+
+      // Track in Amplitude
+      window.amplitude.setUserId(visitorId);
+      window.amplitude.track('page_view', {
+        page_title: document.title,
+        page_path: window.location.pathname,
+        page_url: window.location.href,
+        is_new_visitor: isNewVisitor
+      });
+
+      function showCount(n) {
+        var el = document.getElementById('unique-user-count');
+        if (el) el.textContent = n;
+      }
+
+      if (isNewVisitor) {
+        // Read current count, increment by 1, write back, then display
+        fetch(FIREBASE_URL + '/uniqueUsers.json')
+          .then(function (r) { return r.json(); })
+          .then(function (current) {
+            var newCount = (current || 0) + 1;
+            return fetch(FIREBASE_URL + '/uniqueUsers.json', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(newCount)
+            }).then(function () { return newCount; });
+          })
+          .then(showCount)
+          .catch(function () { showCount('?'); });
+      } else {
+        // Just read and display
+        fetch(FIREBASE_URL + '/uniqueUsers.json')
+          .then(function (r) { return r.json(); })
+          .then(function (count) { showCount(count || 0); })
+          .catch(function () { showCount('?'); });
+      }
+    })();
+  </script>
 </body>
 </html>
