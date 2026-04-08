@@ -76,6 +76,11 @@
       <span class="stat-label">🆔 Unique Users</span>
       <span class="stat-value" id="unique-user-count">--</span>
     </div>
+    <div class="divider"></div>
+    <div class="stat-row">
+      <span class="stat-label">👁️ Total Page Views</span>
+      <span class="stat-value" id="total-page-views">--</span>
+    </div>
   </div>
 
   <script>
@@ -96,8 +101,8 @@
         page_url: window.location.href
       });
 
-      function showCount(value) {
-        var el = document.getElementById('unique-user-count');
+      function showValue(id, value) {
+        var el = document.getElementById(id);
         if (el) {
           el.textContent = value;
         }
@@ -105,8 +110,13 @@
 
       fetch(FIREBASE_URL + '/uniqueUsers.json')
         .then(function (r) { return r.json(); })
-        .then(function (count) { showCount(count || 0); })
-        .catch(function () { showCount('?'); });
+        .then(function (count) { showValue('unique-user-count', count || 0); })
+        .catch(function () { showValue('unique-user-count', '?'); });
+
+      fetch(FIREBASE_URL + '/totalPageViews.json')
+        .then(function (r) { return r.json(); })
+        .then(function (count) { showValue('total-page-views', count || 0); })
+        .catch(function () { showValue('total-page-views', '?'); });
     })();
   </script>
 </body>
