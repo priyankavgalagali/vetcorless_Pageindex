@@ -115,7 +115,15 @@
 
       fetch(FIREBASE_URL + '/totalPageViews.json')
         .then(function (r) { return r.json(); })
-        .then(function (count) { showValue('total-page-views', count || 0); })
+        .then(function (current) {
+          var newCount = (current || 0) + 1;
+          showValue('total-page-views', newCount);
+          return fetch(FIREBASE_URL + '/totalPageViews.json', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newCount)
+          });
+        })
         .catch(function () { showValue('total-page-views', '?'); });
     })();
   </script>
